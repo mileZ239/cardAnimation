@@ -79,11 +79,15 @@
     card.style.width = `${CARD_WIDTH}px`;
     card.style.height = `${CARD_HEIGHT}px`;
 
-    function getRotate3d(horizontalDirection, verticalDirection, angle) {
-        const rotateX = `rotateX(${verticalDirection * K}deg)`;
-        const rotateY = `rotateY(${horizontalDirection * K}deg)`;
+    function setTransition(duration, type) {
+        card.style.transition = `transform ${duration}s ${type}`;
+    }
 
-        return `${rotateX} ${rotateY}`;
+    function getRotate3d(horizontalDirection, verticalDirection, angle) {
+        const rotateX = verticalDirection * K;
+        const rotateY = horizontalDirection * K;
+
+        return [rotateX, rotateY]
     }
 
     // Для наклона только по оси Y
@@ -104,9 +108,10 @@
     //     }
     // });
 
-    card.addEventListener('mousemove', function(event) {
+    function tilt(event) {
         let horizontalDirection = 0;
         let verticalDirection = 0;
+        const isTurned = card.classList.contains('cardTurned');
 
         const posX = event.clientX - card.offsetLeft;
         const posY = event.clientY - card.offsetTop;
@@ -114,11 +119,45 @@
         horizontalDirection = (posX - CARD_WIDTH / 2) / CARD_WIDTH;
         verticalDirection = -(posY - CARD_HEIGHT / 2) / CARD_HEIGHT;
 
-        card.style.transform = getRotate3d(horizontalDirection, verticalDirection, 30);
+        let [rotateX, rotateY] = getRotate3d(horizontalDirection, verticalDirection, 30);
+
+        const flip = isTurned ? 'rotateY(180deg)' : '';
+        card.style.transform = `${flip} rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    }
+
+    card.addEventListener('mousemove', (event) => {
+        setTransition(0.3, 'ease-out');
+        tilt(event);
+    });
+
+    card.addEventListener('click', function(event) {
+        setTransition(1, 'linear');
+
+        const isTurned = card.classList.contains('cardTurned');
+        
+        if (isTurned) {
+            card.classList.remove('cardTurned');
+            
+            setTimeout(function() {
+                card.innerHTML = '<h1>Bank card</h1>';
+                card.style.backgroundColor = '#6f4e99';
+            }, 500)
+        } else {
+            card.classList.add('cardTurned');
+
+            setTimeout(function() {
+                card.innerHTML = '<h1 style="transform: rotateY(180deg)"">Back layout v2</h1>';
+                card.style.backgroundColor = '#9b9b9b';
+            }, 500)
+        }
+
+        tilt(event);
     });
 
     card.addEventListener('mouseleave', function() {
-        card.style.transform = 'rotateX(0deg) rotateY(0deg)';
+        const isTurned = card.classList.contains('cardTurned');
+        const flip = isTurned ? 'rotateY(180deg)' : '';
+        card.style.transform = `${flip} rotateX(0deg) rotateY(0deg)`;
     });
 
     debitCard.addEventListener('click', function() {
