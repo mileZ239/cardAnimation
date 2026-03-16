@@ -74,13 +74,14 @@
 
     const CARD_WIDTH = 400;
     const CARD_HEIGHT = 240;
+    const K = 60;
 
     card.style.width = `${CARD_WIDTH}px`;
     card.style.height = `${CARD_HEIGHT}px`;
 
     function getRotate3d(horizontalDirection, verticalDirection, angle) {
-        const rotateX = `rotateX(${verticalDirection * 10}deg)`;
-        const rotateY = `rotateY(${horizontalDirection * 10}deg)`;
+        const rotateX = `rotateX(${verticalDirection * K}deg)`;
+        const rotateY = `rotateY(${horizontalDirection * K}deg)`;
 
         return `${rotateX} ${rotateY}`;
     }
@@ -110,29 +111,8 @@
         const posX = event.clientX - card.offsetLeft;
         const posY = event.clientY - card.offsetTop;
 
-        if (posX < (CARD_WIDTH / 2 - 10)) {
-            horizontalDirection = -1;
-        }
-
-        if (posX > (CARD_WIDTH / 2 - 10) && posX < (CARD_WIDTH / 2 + 10)) {
-            horizontalDirection = 0;
-        }
-
-        if (posX > (CARD_WIDTH / 2 + 10)) {
-            horizontalDirection = 1;
-        }
-
-        if (posY < (CARD_HEIGHT / 2 - 10)) {
-            verticalDirection = 1;
-        }
-
-        if (posY > (CARD_HEIGHT / 2 - 10) && posY < (CARD_HEIGHT / 2 + 10)) {
-            verticalDirection = 0;
-        }
-
-        if (posY > (CARD_HEIGHT / 2 + 10)) {
-            verticalDirection = -1;
-        }
+        horizontalDirection = (posX - CARD_WIDTH / 2) / CARD_WIDTH;
+        verticalDirection = -(posY - CARD_HEIGHT / 2) / CARD_HEIGHT;
 
         card.style.transform = getRotate3d(horizontalDirection, verticalDirection, 30);
     });
